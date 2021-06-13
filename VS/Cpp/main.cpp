@@ -9,9 +9,13 @@ int main()
 
     *rp = 11;
 
-    std::cout << "x = " << x << "\n";
-}
+    rp = &y;                            //rp referansinin gosterdigi yer degistirildi, artik y nesnesini gosteriyor.
 
+    ++*rp;
+
+    std::cout << "x = " << x << "\n";
+    std::cout << "y = " << y << "\n";
+}
 
 
 /*
