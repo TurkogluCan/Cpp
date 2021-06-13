@@ -1,0 +1,2 @@
+C:\Users\enesc\Masaüstü\GitKrakenRepo\Cpp\Cpp\VS\Cpp\Debug\Cpp.exe
+C:\Users\enesc\Masaüstü\GitKrakenRepo\Cpp\Cpp\VS\Cpp\Debug\Cpp.pdb
