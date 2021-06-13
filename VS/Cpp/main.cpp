@@ -1,25 +1,30 @@
 ﻿#include <iostream>
 
 
-void Swap(int &r1, int &r2)
+static int g = 10;
+int &func()
 {
-    int temp = r1;
-    r1 = r2;
-    r2 = temp;
+    return g;
 }
 
 int main()
 {
-    int x = 10;
-    int y = 20;
-    int &r1 = x;
-    int &r2 = y;
+    func() = 45;
 
-    Swap(r1, r2);
-
-    std::cout << "x = " << x << "\n" << "y = " << y << "\n";
+    std::cout << "g = " << g << "\n";
 }
 
+/* Bu ornekte "int &func()" fonksiyonu referans donusu olan bir fonksiyondur ve static int olan g'yi doner. Nesneyi referans olarak doner.
+   C++'da;
+   "Tur &func(...)" prototipindeki bir fonksiyona "func() = ..." seklinde yapilan cagri ifadesi "lvalue expression" sol deger 
+   ifadesidir.
+   "func() = ..."  gibi bir atama durumu da mumkundur. Burada func donusu g'nin referansidir ve g'nin referansina
+   bir deger ataniyor diye dusunulmelidir.
+   -> func() = 45;    veya    int &r = g;
+                              r = 45;
+   
+   -> Tur &r = func();
+*/
 
 /*
     ---------------------------------------------------- R E F E R A N C E ----------------------------------------------------
@@ -30,6 +35,7 @@ int main()
     -> int &r   = ival;                         // Lvalue expression
        int &r{ival};
        int &r(ival);
+
     2* Referanslara ilk deger veren sol taraf degeri ile reference turu ayni olmak zorunda.
     -> int ival = 10;
     -> double &r   = ival;                       ❌ - ERROR                  
@@ -59,7 +65,30 @@ int main()
 
     8* Elemanlari referans olan bir referans dizisi olamaz.
 
+    9* "Tur &func(...)" prototipindeki bir fonksiyona "func() = ..." seklinde yapilan cagri ifadesi "lvalue expression" sol deger 
+        ifadesidir. Bu sayede deger atanabilmektedir.
+        func(...) fonksiyonu nesneyi referans olarak doner. Bu yuzden referansa ilk deger vermede de kullanılabilmektedir.
+        
+        -> func() = 10;
+        -> Tur &r = func();
+    
+    10* Referans ile pointer kullanmak assembly kod acisindan neredeyse aynidir. Derleyici icin neredeyse bir fark yoktur.
+    
+    ---------------------------------------------------- R E F E R A N C E  ve  C O N S T ---------------------------------------
+    
 
+    1* Referance'lardki "Tur * const ptr" karsiligi      ❌  (tur * const ptr)
+    -> int x = 10;
+       int &const r = x;
+       Bu kullanim dogru bir kullanim degildir. Cunku referanslarin gosterdigi nesne zaten degistirilemez, baska bir nesnenin yerine gecemez. 
+       Dogustan kenidisi const'tur.
+       Derleyici Syntax hatasi vermeyebilir fakat uyari verir. 
+
+    2* Referance'lardki "const Tur *ptr" karsiligi        ✔  (const tur *ptr)
+    -> int x = 10;
+       const int &r = x;
+    -> const Tur *foo(...)
+       Bu kullanimla birlikte r'nin gosterdigi x yalnizca salt okunabilir olarak kullanilabilinecektir. x'in degeri degistirilemez.
 
 
 
