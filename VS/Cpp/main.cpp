@@ -2,19 +2,21 @@
 
 int main()
 {
-    int x = 10;
-    int y = 20;
-    int *ptr = &x;
-    int *&rp = ptr;
+    /* Dizinin referansa atanmasi */
+    int a[5]    = { 0,1,2,3,4 };
+    int(&ra)[5] = a;
 
-    *rp = 11;
+    for (int i = 0; i<5; i++)
+        std::cout << ra[i] << "\n";
 
-    rp = &y;                            //rp referansinin gosterdigi yer degistirildi, artik y nesnesini gosteriyor.
 
-    ++*rp;
+    std::cout << "--------" << "\n";
+    /* Dizi referansinin pointera atanmasi */
+    
+    int *ptr = ra;
 
-    std::cout << "x = " << x << "\n";
-    std::cout << "y = " << y << "\n";
+    for (int i = 0; i < 5; i++)
+        std::cout << *ptr++ << "\n";
 }
 
 
@@ -47,6 +49,10 @@ int main()
     -> int x     = 10;           (int x)
        int *ptr  = &x;           (int * ptr)  = (int *)x 
        int *&rp  = ptr;          (int * &rp)  = ptr
+                   
+    6* Bir dizi kendisine referans alabilir.
+    -> int a[5]      = {0,1,2,3,4};  
+       int (&ra)[5]  = a;           
                         
 ******************************************************************************************************************************************************
 */
