@@ -1,22 +1,23 @@
 ﻿#include <iostream>
 
+
+void Swap(int &r1, int &r2)
+{
+    int temp = r1;
+    r1 = r2;
+    r2 = temp;
+}
+
 int main()
 {
-    /* Dizinin referansa atanmasi */
-    int a[5]    = { 0,1,2,3,4 };
-    int(&ra)[5] = a;
+    int x = 10;
+    int y = 20;
+    int &r1 = x;
+    int &r2 = y;
 
-    for (int i = 0; i<5; i++)
-        std::cout << ra[i] << "\n";
+    Swap(r1, r2);
 
-
-    std::cout << "--------" << "\n";
-    /* Dizi referansinin pointera atanmasi */
-    
-    int *ptr = ra;
-
-    for (int i = 0; i < 5; i++)
-        std::cout << *ptr++ << "\n";
+    std::cout << "x = " << x << "\n" << "y = " << y << "\n";
 }
 
 
@@ -54,5 +55,24 @@ int main()
     -> int a[5]      = {0,1,2,3,4};  
        int (&ra)[5]  = a;           
                         
+    7* Referans kullaniminda pointerda oldugu gibi NULL pointer semantigi yoktur.
+
+    8* Elemanlari referans olan bir referans dizisi olamaz.
+
+
+
+
+
+
+    ---------------------------------------------------- N U L L ----------------------------------------------------------------
+    C'de "NULL"  bir makrodur. Tanimi;
+    #define NULL (void *)0
+    -> int *ptr = NULL;
+       ptr = 0;
+    C++'de nullptr vardır.  nullptr bir sabittir ve bir turu vardır. Bu turun ismi nullptr_t'dir.
+    typedef decltype(nullptr) nullptr_t; 
+    -> int *ptr = nullptr_t;
+
+
 ******************************************************************************************************************************************************
 */
