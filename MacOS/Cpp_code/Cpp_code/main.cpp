@@ -1,17 +1,30 @@
-/* ENUM
+/* DECLTYPE
  
- - C'de enum türü arka planda derleyicinin kullandığı tür(underline type) integer olmak zorundadır.
- - C++'da enum türünün arkasında kullanığı veri tipinin garantisi yoktu. Numaratör değelerine bakılarak derleyici uygun veritipini seçebilirdi. Fakat Modern C++ ile birlikte gelen önemli eklentilerden birisi olan enum veri tipini(underline type ,baz türünü) kendimizin belirleyebilmemizdir.
+ decltype(x)
+ - Decltype anahtar sözcüğü, tür bilgisi kullanılan her yerde kullanılabilmektedir.
+ - decltype(x) ifadesinde x'in türü neyse ifadenin sonucu da odur.
+ - decltype ile auto arasında bazı çıkarımsal farklılıklar bulunmaktadır. auto kullanımı biraz daha tercihe bağlıdır fakat decltype bazı yerlerde zorunluluk olabilir.
  
- - C++'da normal enumlarda ve enum class'larda underline type belirlenebilmekte. Böylece numaratörlerin sahip olacağı veri tipi karmaşasının önüne geçilebilmektedir.
+ - decltype'da auto'da olduğu gibi cont düşmez.
+ - decltype'da array to pointer conversion yapılmaz.
  
- - Diğer türlerden enum türüne dönüşüm yoktur fakat enum türünden diğer türlere dönüşüm bulunmaktadır.
+ - * decltype operandı eğer bir isimse, doğrudan ismin türünü alır.
+ - * decltype operandı eğer bir ifadeyse aşağıdaki durumlara göre tür belirlenir.
  
- - ENUM türleri unscope olduğu için isimleri aynı iki farklı enum türünün içerisindeki numaratörler hata verecektir. Bu durumun önüne geçilmesi için C++'da enum class mevcuttur.
-
- - Enum class'lar aslında kapsamlandırılmış enumlardır. Yani içerisindeki numaratörlere unscope şekilde erişim imkanım olmuyor. Enum class ismi üzerinden ulaşabilmekteyim.
- - Enum class'lara da underline type geçilebilmektedir. Eğer geçilmezse default olarak int atanmaktadır.
+ Eğer Decltype Operandı İfade ise Tür Durumları
+ 1- Eğer decltype'ın operandı olan ifade PR value kategoreisinde ise elde edilen tür(T) doğrudan ifadenin türüne(T) eşittir
+ 2- Eğer decltype'ın operandı olan ifade L  value kategoreisinde ise elde edilen tür(T) ifadenin türünün referansına(&T) eşittir
+ 3- Eğer decltype'ın operandı olan ifade PR value kategoreisinde ise elde edilen tür(T) ifadenin türünün refref(&&T) eşittir
  
+ decltype(T), T bir ifade
+ 1- PR value ise tür ->   T türüdür
+ 2-  L value ise tür ->  &T türüdür
+ 3-  X value ise tür -> &&T türüdür
+ 
+ 
+ !!! VALUE EXPRESSION
+ - Bir isim şeklinde olan bütün ifadeler lvalue expression’dır.
+ - Value kategorilerinden bahsedebilmek için bir ifade olması lazım. Bildirimlerin value kategorisi olmaz, ifadelerin olur.
  
 */
 
@@ -22,59 +35,6 @@
 
 // Yapılar
 
-/* 1 - Unscope ornek
- 
-// color.h
-enum Color
-{
-    RED,
-    YELLOW,
-    GREEN
-};
-
-// traffic.h
-enum TraficColor
-{
-    RED,
-    YELLOW,
-    GREEN
-};
-*/
-
-
-enum Color
-{
-    RED,
-    YELLOW,
-    GREEN
-};
-
-
-// Underline type ENUM
-enum Color_underline : int
-{
-    int_RED,
-    int_YELLOW,
-    int_GREEN
-};
-
-
-// ENUM CLASS
-enum class Color_EC : unsigned int
-{
-    RED,
-    YELLOW,
-    GREEN
-};
-
-enum class Traffic_EC : unsigned int
-{
-    RED,
-    YELLOW,
-    GREEN
-};
-
-
 
 // Func
 
@@ -83,16 +43,97 @@ enum class Traffic_EC : unsigned int
 int main()
 {
     
-    // Tur donusumu
+    // - int a
     {
-        Color myu_color = RED;
-        int x = myu_color;
+        int x = 10;
+        decltype(x) a;
+    }
+    
+    // - double a
+    {
+        int x = 10;
+        decltype(x + 3.5) a;
+    }
+    
+    // - int *ptr
+    {
+        int x = 10;
+        decltype(x) *ptr;
+    }
+        
+    // - const int *ptr
+    {
+        int x = 10;
+        const decltype(x) *ptr;
+    }
+    
+    // - const int *ptr, CONSTLUK DUSMEZ
+    {
+        const int x = 10;
+        decltype(x) *ptr;
+    }
+    
+    // - int b[10]
+    {
+        int a[10]{};
+        decltype(a) b;
+    }
+    
+    // - int &y
+    {
+        int x = 10;
+        int &r = x;
+        decltype(r) y = x;
     }
     
     
-    // SCOPE
+    
+    //*** DECLTYPE DURUMLARI - Operand isim
     {
-        Color_EC color = Color_EC::RED;
+        int x = 10;
+        decltype(x) a;  //int a
+    }
+    
+    //*** DECLTYPE DURUMLARI - Operand L value
+    {
+        int x = 10;
+        int b = 10;
+        decltype((x)) a = b;   // int &a
+        
+        // !!! decltype(x) bir isim operandı iken decltype((x)) bir ifadedir ve L value expressiondır.
+    }
+    
+    
+    //*** DECLTYPE DURUMLARI - Operand L value
+    {
+        int x = 10;
+        int b = 10;
+        
+        decltype(++x) a = b;   // int &
+    }
+    
+    
+    //*** DECLTYPE DURUMLARI - Operand X value
+    {
+        int &&foo();
+        
+        decltype(foo()) a = 10;   // int &&
+    }
+    
+    
+    //*** DECLTYPE DURUMLARI - Operand PR value
+    {
+        int x = 10;
+        
+        decltype(x+5) a;   // int
+    }
+    
+    
+    //*** DECLTYPE DURUMLARI - Operand PR value
+    {
+        int x = 10;
+        
+        decltype(x++) a;   // int
     }
 
 }
