@@ -1,31 +1,81 @@
-/* DECLTYPE
- 
- decltype(x)
- - Decltype anahtar sözcüğü, tür bilgisi kullanılan her yerde kullanılabilmektedir.
- - decltype(x) ifadesinde x'in türü neyse ifadenin sonucu da odur.
- - decltype ile auto arasında bazı çıkarımsal farklılıklar bulunmaktadır. auto kullanımı biraz daha tercihe bağlıdır fakat decltype bazı yerlerde zorunluluk olabilir.
- 
- - decltype'da auto'da olduğu gibi cont düşmez.
- - decltype'da array to pointer conversion yapılmaz.
- 
- - * decltype operandı eğer bir isimse, doğrudan ismin türünü alır.
- - * decltype operandı eğer bir ifadeyse aşağıdaki durumlara göre tür belirlenir.
- 
- Eğer Decltype Operandı İfade ise Tür Durumları
- 1- Eğer decltype'ın operandı olan ifade PR value kategoreisinde ise elde edilen tür(T) doğrudan ifadenin türüne(T) eşittir
- 2- Eğer decltype'ın operandı olan ifade L  value kategoreisinde ise elde edilen tür(T) ifadenin türünün referansına(&T) eşittir
- 3- Eğer decltype'ın operandı olan ifade PR value kategoreisinde ise elde edilen tür(T) ifadenin türünün refref(&&T) eşittir
- 
- decltype(T), T bir ifade
- 1- PR value ise tür ->   T türüdür
- 2-  L value ise tür ->  &T türüdür
- 3-  X value ise tür -> &&T türüdür
+/* FUNTION OVERLOADING(Fonksiyon Yüklemesi)
  
  
- !!! VALUE EXPRESSION
- - Bir isim şeklinde olan bütün ifadeler lvalue expression’dır.
- - Value kategorilerinden bahsedebilmek için bir ifade olması lazım. Bildirimlerin value kategorisi olmaz, ifadelerin olur.
+ Funtion Overloading Giriş:
+ -------------------------
+ Funtion overloading tanımına girmdeden önce şöyle bir örnek verelim.
  
+ Aritmektik işlem operatörü olan '+' işaretinin kullanımı sırasında;
+    Eğer 'int'   türünden değişkenlerle toplama yaparsam arka planda üreteceği makina kod farklı,
+    Eğer 'float' türünden değişkenlerle toplama yaparsam arka planda üreteceği makina kod farklı olacaktır.
+ Bu durumda derleyici bize tamsayılar için farklı gerçek sayılar için farklı bir operatör kullacaksın dese saçma ve gereksiz olurdur.
+ İşte function overloading de buna benzemektedir.
+ 
+ 
+ Funtion Overloading Genel Tanım:
+ --------------------------------
+ Aynı isme sahip ve aynı işlevi gerçekleştiren, farklı türden ve sayıdan parametre bildirilere sahip olan fonksiyonların tanımlanmasına ve kullanılmasına "Fonksiyon Overloading" denir. Funciton overolading'in ana kullanım amacı, ana işlevleri benzer olan fonksiyonların, parametre değişikliğine bağlı olarak farklılaşmasını engellemek, aynı isimle overload ederek farklı fonksiyonlar gibi kullanabilmektir. Overload edilen fonksiyonların içeriği birbirlerinden farklı olabilir ama fonksiyonun amacı aynı olmalı ki kullanıcı tarafından hatalı kullanım olmasın.
+ 
+ ---------------------------
+
+ Fonksiyon yüklemesinden söz edilebilmesi için iki koşulun sağlanması gerekir:
+
+ 1) Aynı isimli birden fazla fazla fonksiyon aynı kapsamda (scope) var olmalı.
+ 2) Fonksiyonların imzaları farklı olmalıdır.
+
+ 
+ Function Signatur(Fonksiyon İmzası):
+ ------------------------------------
+ Bir fonksiyonun geri dönüş türü hariç, fonksiyonun ismi, parametre tipleri ve parametre sayısını belirten bilgiye "fonksiyonun imzası" denir.  Fonksiyonun geri dönüş değerinin türünü fonksiyonun imzasının bir parçası olarak görmeyeceğiz
+    
+ // Imzaları aynı
+         int func(int)
+         double func(int);
+
+ 
+ Scope Kuralları:
+ ----------------
+ Bildirilen fonksiyonların scope'ları aynı olmalıdır. Eğer scopelar farklıysa Function Overloadingden BAHSEDİLEMEZ.
+ 
+ //Scope Tipleri
+    Namespace scope (file scope in C)
+    Class     scope
+    Block     scope
+    Function prototype scope
+    Function scope
+    
+ Token(Atom) ve Name Lookup(İsim Arama):
+ ---------------------------------------
+ Derleyici açısından kaynak kodun en küçük birimidir. Örneğin isimler. Derleyici kodu atomize eder. Kodun derlenme sırasında derleyicinin bir isimle karşılaşıp bu ismi araması durumuna "Name Lookup" denir.
+ 
+ 
+ İsim arama kuralları:
+ 
+ 1)
+ 
+ Derleyici ismi ararken önce kendi scope'una, sonra bütün kapsayan scope'lara, eğer yine bulamazsa bütün global olanlarda arar.
+ Fakat C++'da "Scope Resolution, ::" operatörü kullanılarak derleyiciye, derleyici sen bu ismi global alanda ara diyerek farklı bir scope araması yaptırabiliriz.
+ 
+ ------------
+ int a;             // Global alan
+ 
+ int main()
+ {
+    float a = 1.5f;
+ 
+    cout << a;        // Burada derleyici öncelikle kendi scope'una bakacağı için gloabelde tanımlı olan a'nın hiçbir önemi yoktur.
+ }
+ 
+ ------------
+ 
+ int main()
+ {
+    int printf = 10;
+ 
+    printf("enescan");     // Burada derleyici öncelikle kendi scope'una bakacağı için standart kütüphanede
+                           // tanımlı olan printf'in hiçbir hiçbir önemi yoktur.
+ }
+
 */
 
 
@@ -43,97 +93,5 @@
 int main()
 {
     
-    // - int a
-    {
-        int x = 10;
-        decltype(x) a;
-    }
-    
-    // - double a
-    {
-        int x = 10;
-        decltype(x + 3.5) a;
-    }
-    
-    // - int *ptr
-    {
-        int x = 10;
-        decltype(x) *ptr;
-    }
-        
-    // - const int *ptr
-    {
-        int x = 10;
-        const decltype(x) *ptr;
-    }
-    
-    // - const int *ptr, CONSTLUK DUSMEZ
-    {
-        const int x = 10;
-        decltype(x) *ptr;
-    }
-    
-    // - int b[10]
-    {
-        int a[10]{};
-        decltype(a) b;
-    }
-    
-    // - int &y
-    {
-        int x = 10;
-        int &r = x;
-        decltype(r) y = x;
-    }
-    
-    
-    
-    //*** DECLTYPE DURUMLARI - Operand isim
-    {
-        int x = 10;
-        decltype(x) a;  //int a
-    }
-    
-    //*** DECLTYPE DURUMLARI - Operand L value
-    {
-        int x = 10;
-        int b = 10;
-        decltype((x)) a = b;   // int &a
-        
-        // !!! decltype(x) bir isim operandı iken decltype((x)) bir ifadedir ve L value expressiondır.
-    }
-    
-    
-    //*** DECLTYPE DURUMLARI - Operand L value
-    {
-        int x = 10;
-        int b = 10;
-        
-        decltype(++x) a = b;   // int &
-    }
-    
-    
-    //*** DECLTYPE DURUMLARI - Operand X value
-    {
-        int &&foo();
-        
-        decltype(foo()) a = 10;   // int &&
-    }
-    
-    
-    //*** DECLTYPE DURUMLARI - Operand PR value
-    {
-        int x = 10;
-        
-        decltype(x+5) a;   // int
-    }
-    
-    
-    //*** DECLTYPE DURUMLARI - Operand PR value
-    {
-        int x = 10;
-        
-        decltype(x++) a;   // int
-    }
-
+   
 }
