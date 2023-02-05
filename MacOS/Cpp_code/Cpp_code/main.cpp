@@ -1,61 +1,45 @@
 /* Classes
     
- Class Elemanları
- ----------------
+ Class Member Erişim Alanları
+ ----------------------------
+ C++'da isim arama(name lookup) tamamlandıktan sonra access kontrolü yapılmaktadır. Bu access kontrolünde ise sınıfın üyesi olan ismin aşağıda belirtilen yetkileri  kontrol edilmektedir.
+ 
  class Data
  {
-     int mx;             // Data member
-     void func(int);     // Member function
-     typedef int Word;   // Type member(member type, nested type)
+    public: Sınıfın public bölümü herkese açık bölümüdür. Yani sınıfın bu alanındaki isimleri herkes kullanabilir.
+ 
+    private: Sadece sınıfın kendi içerisinde kullanılabilen, client kodlar tarafından kullanılamayan isimlerdir.
+ 
+    protected: Kalıtım konusuyla ilgilidir, daha sonra değinilecektir.
  };
 
- Class Scope
- -----------
- Bir sınıfın tanımı içerisinde bildirilen tüm isimler "class scope" denilen özel bir kapsama sahiptir.
+ 
+ - Classlar tanımlanırken kendi içerisinde "public", "private" ve "protected" anahtar sözcükleri kullanılarak ilgili alanlara ayrılabilir.
+ -- Class'ın kendi içerisindeki alan default olarak "private" alandır. Yani class içerisinde hiçbir alan anahtar sözcüğü kullanılmazsa, içerisindeki üyeler private alanlı olacaktır.
+ -- Struct'ın kendi içerisindeki alan default olarak "public" alandır. Yani struct içerisinde hiçbir alan anahtar sözcüğü kullanılmazsa, içerisindeki üyeler public alanlı olacaktır.
  
  
- Şu durumlarda bir isim class scope içinde aranır(Name lookup);
- 
- 1) "."  operatörünün sağ operandı olan isimler
- 2) "->" operatörünün sağ operandı olan isimler
- 3) "::" (scope resolution) operatörünün sağ operandı olan isimler
- 
-Unary: Tek operantlı scope resolution kullanımı. Eğer isimle ilgili bir işlemde, örneğin int tipinden bir değişken, unary çözünürlük operatörü kullanılırsa bu, derleyiciye ismi namespace scope'ta, global alanda ara demek olur(name lookup aşaması). Yerel scope'ta x değişkeni, ismi yer alsa bile global alanda arama yapılır.
- Örn. "::x"
-
- //
- int g = 10;
-
- int main()
+ class Data
  {
-     int g = 20;
-     
-     ::g += g;           // Global alandaki g(::g(Unary)) ile localdeki g'nin toplamı
+            // PRIVATE ALAN
+    public:
+            // PUBLIC ALAN
+    private:
+            // PRIVATE ALAN
+    public:
+            // PUBLIC ALAN
+    protected:
+            // PROTECTED ALAN
  }
- //
  
-Binary: Çift operantlı scope resolution kullanımı. Binary çözünürlük operatörünün sol operandı olan isim ya bir namespace ismi, ya da bir class ismidir. Sağ operandındaki isim ise buna bağlı olarak class veya ilgili namespace scope'ta aranacaktır.
-Örn. "a::b"
+ MEMBER
+ ------
+ Classın "member function" ve "Data member"ları static ve non-static olarak 2'ye ayrılmaktadır.
+ 
+ 1) Eğer sınıfın üyesinin bildiriminde static anahtar sözcüğü varsa bu member static ömürlüdür ve ilgili sınıf için tektir. Bu sınıftan ne kadar nesne yaratılırsa yaratılsın bütün nesneler aynı membera erişir, her nesne için yeniden yaratılmaz.
+ 2) Eğer sınıfın üyesinin bildiriminde anahtar sözcüğü yoksa bu member static ömürlü değildir ve ilgili sınıftan yaratılacak olan nesneler için yeniden oluşturulur. Bütün nesneler için farklıdır.
  
  
- Namespace (İsim Alanı)
- ----------------------
- İsimleri birbirinden gizlemek için kullanılan bir araçtır. Gloabal alandaki isimlerin birbirleriyle karışmasını engellemek için oluşturulmuş isim bölgeleridir. Namespace global alanı parselleyerek kendine özgü isim alanları yaratır.
-
- namespace Neco
- {
-     int x = 64;
- }
-
- //
- int main()
- {
-     int x = 1;
-
-     std::cout << x << '\n';         // x = 1;
-     std::cout << Neco::x << '\n';   // x = 64;
- }
-
 */
 
 
@@ -72,17 +56,8 @@ class Data
 };
 
 
-
-namespace Neco
-{
-    int x = 64;
-}
-
 //
 int main()
 {
-    int x = 1;
 
-    std::cout << x << '\n';         // x = 1;
-    std::cout << Neco::x << '\n';   // x = 64;
 }
