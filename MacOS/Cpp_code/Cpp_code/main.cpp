@@ -1,54 +1,95 @@
-/* Classes Member Functions - 2
+/* const member func, mutable, default member initialize
  
  
- Member Function Definition
- --------------------------
- ->i: Member functionlar tanımlanırken bildirimleri sınıfın ismi ve çözünürlük operatörü kullanılarak yapılır. Eğer sınıf ismi kullanılmadan yapılırsa bu sınıfa ait bir fonksiyon olmaz.
-
+ Const Member Function
+ ---------------------
+ ->i: Gizli parametrenin const olması istenen durumlarda, fonksiyonun sınıf içerisindeki ve tanımalama sırasındaki bildirimi sırasında bildirimin sonuna "const" anahtar sözcüğü koyulur. Eğer koyulmazsa default olarak const olmayan bir gizli parametreye sahip fonksyion yaratılır. Const koyulan fonksiyon üyelerini "get(...)", koyulmayanları ise birer "set(...)" fonksiyonlar olarak düşünebiliriz.
+ 
+ //
  class Data {
  private:
      int mx;
      
  public:
-     void func(int x);
- };
- 
- // Sınıfa ait degil
- void func(<#int x#>)
- {
-    // Normal bir fonksiyon
- }
- 
- // Sınıfa ait
- void Data::func(<#int x#>)
- {
-     mx = 10;
- }
-
- 
- this
- ----
- ->i: this anahtar sözcüğü c++'da sınıf türünden yaratılmış olan bir nesnenin adresini ifade etmektedir. O yüzden ismi "this pointer"dır. Member functionlar içerisinden ulaşılacak olan data memberlar nasıl gizli parametreyle sadece member ismi kullanılarak ulaşılabiliyorsa(mx), this pointer kullanılarak da ulaşılabilir(this->mx)
-
- class Data {
- private:
-     int mx;
-     
- public:
-     void func(int x);
+     void getfunc(int x)const;
+     void setfunc(int x);
  };
 
- // Asagida yapilan atamalar ozdestir
- void Data::func(int x)
+
+
+ void Data::setfunc(int x)
  {
      mx = x;
-     this->mx = x;
-     Data::mx = x;
+ }
+
+ void Data::getfunc(int x)const
+ {
+     mx = x;    // HATA
+ }
+ 
+ 
+ // 2
+ class Data {
+ private:
+     int mx;
+     
+ public:
+     Data *foo();
+     Data &func();
+ };
+
+ Data* Data::foo()
+ {
+     //...
+     return this;
+ }
+
+ Data& Data::func()
+ {
+     //...
+     return *this;
+ }
+ 
+ 
+ mutable
+ -------
+ ->i: Sınıfın bir veri elemanını mutable anahtar sözüğü ile tanımlamak şu anlama gelir, kodu okuyan sevgili kişi, bu veri elemanının değişmesi, sınıf türünden yaratılan bir nesnenin problem domainindeki anlamını değiştirmez. Yani bu değişse de değişmese de seni etkilemez. Örneğin sınıf içerisinde kullanılan ve dışarıyı etkilemeyen sayaçlar
+ ->i: Mutable data memberlar const functionlar içeriside değiştirilebilir.
+ 
+ //
+ class Data {
+ private:
+     mutable int msayac;
+     
+ public:
+     void getfunc(int x)const;
+     void setfunc(int x);
+ };
+
+ void Data::getfunc(int x)const
+ {
+     msayac++;    // Dogru
  }
 
  
+ Default member initializer
+ ---------------------------
+ ->i: Modern c++ ile birlikte gelen bir kullanımdır. Bir sınıf nesnesinin hayata getirilmesi durumunda onun veri elemanına ilk değer verilebilir.
  
+ //
+ class Data {
+ private:
+     int mx = 10;;
+     
+ public:
+     Data &f1();
+     Data &f2();
+     Data &f3();
+     
+     int gmx = 20;
+ };
  
+
 */
 
 
@@ -60,27 +101,37 @@
 //
 class Data {
 private:
-    int mx;
+    int mx = 10;;
     
 public:
-    void func(int x);
+    Data &f1();
+    Data &f2();
+    Data &f3();
+    
+    int gmx = 20;
 };
 
 
 
-void Data::func(int x)
+
+Data& Data::f1()
 {
-    mx = 9;
-    this->mx = 10;
-    Data::mx = 11;
+    //...
+    return *this;
 }
+
 
 //
 int main()
 {
     Data mydata;
+
+    // Bu kullanım geçerli ve doğrudur. Fonksiyon dönüşün nesnenin referansı olduğu için o referansla
+    // tekrar farklı bir fonksiyon çağrısı yapmak veya data membera ulaşmak da mümkündür.
+    mydata.f1().f2().f3();
+    mydata.f1().f2().f3().gmx = 10;
     
-    mydata.func(10);
+    // mydata.f1() dönüşü -> mydata, bu yüzden dönüş üzerinden başka bir membera ulaşmak mümkündür.
     
     //
     {
