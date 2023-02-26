@@ -1,38 +1,53 @@
-/* Classes - 2
+/* Classes Member Functions - 2
  
- Class Member Function:
- ->i: Sınıfların üye fonksiyonları sınıf scope'u içerisinde overload edilebilir. Public ve private alanda olması overloadinge engel değildir, önemli olan scope'tur. Public, private ve protected alanlar aynı scope alanı içerisindedir.
  
- // Function overloading
- class Data
- {
+ Member Function Definition
+ --------------------------
+ ->i: Member functionlar tanımlanırken bildirimleri sınıfın ismi ve çözünürlük operatörü kullanılarak yapılır. Eğer sınıf ismi kullanılmadan yapılırsa bu sınıfa ait bir fonksiyon olmaz.
+
+ class Data {
  private:
-     void func();
+     int mx;
+     
  public:
-     void func(int);
-     void func(int,int);
+     void func(int x);
  };
  
- 
- ->i: Sınıfların üye fonksiyonlarının sınıf türünün sizeof'uyla bir ilgisi yoktur. Yani sınıf türünden yaratılan her nesne için fonksiyon tekrar yaratılmaz, sınıf nesnelerinin boyutunu arttırmaz.
- 
- 
- ->i: Sınıf içerisindeki non-static üye fonksiyonlarının ilk parametresi yaratılan, fonksiyona ulaşan, nesnenin adresini içerir. Bu parametre gizli bir parametredir ve kullanıcının yaratacağı fonksiyonun girdilerinden bağımsızdır. Non-static olduğu için fonksiyon çağrıldığında çağıran nesnein adresini içeriye almalı ki nesne üzerinde işlemlerini gerçekleştirebilsin. Member functionlar içerisinde çağırılan data member'lara atomic göstergeler olmadan ulaşılmasının sebebi de gizli parametredir. Gizli parametre olmasına rağmen data member'lara "this" anahtar kelimesi ile de ulaşılabilmektedir.
-    Fakat static member function'lar sınıftan yaratılacak olan nesnelerden bağımsız ve tek olduğu için static ömürlü member functionlara sınıf ismi ve çözünürlük operatörüyle ulaşılabilmektedir çünkü gizli bir parametresi yoktur.
- 
- // Function overloading
- class Data
+ // Sınıfa ait degil
+ void func(<#int x#>)
  {
- private:
- public:
-             void func(int);
-     static  void staticfunc(int);
- };
- // Member function gizli parametre
- {
-     Data::func(12);         // Gecersiz, non-static
-     Data::staticfunc(12);   // Gecerli,  static
+    // Normal bir fonksiyon
  }
+ 
+ // Sınıfa ait
+ void Data::func(<#int x#>)
+ {
+     mx = 10;
+ }
+
+ 
+ this
+ ----
+ ->i: this anahtar sözcüğü c++'da sınıf türünden yaratılmış olan bir nesnenin adresini ifade etmektedir. O yüzden ismi "this pointer"dır. Member functionlar içerisinden ulaşılacak olan data memberlar nasıl gizli parametreyle sadece member ismi kullanılarak ulaşılabiliyorsa(mx), this pointer kullanılarak da ulaşılabilir(this->mx)
+
+ class Data {
+ private:
+     int mx;
+     
+ public:
+     void func(int x);
+ };
+
+ // Asagida yapilan atamalar ozdestir
+ void Data::func(int x)
+ {
+     mx = x;
+     this->mx = x;
+     Data::mx = x;
+ }
+
+ 
+ 
  
 */
 
@@ -42,24 +57,34 @@
 // Yapılar
 
 
-// Function overloading
-class Data
-{
+//
+class Data {
 private:
+    int mx;
+    
 public:
-            void func(int);
-    static  void staticfunc(int);
+    void func(int x);
 };
 
 
 
+void Data::func(int x)
+{
+    mx = 9;
+    this->mx = 10;
+    Data::mx = 11;
+}
+
 //
 int main()
 {
-    // Member function gizli parametre
+    Data mydata;
+    
+    mydata.func(10);
+    
+    //
     {
-        Data::func(12);         // Gecersiz, non-static
-        Data::staticfunc(12);   // Gecerli,  static
+
     }
 
 }
