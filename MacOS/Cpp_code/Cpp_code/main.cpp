@@ -1,44 +1,38 @@
-/* Classes
-    
- Class Member Erişim Alanları
- ----------------------------
- C++'da isim arama(name lookup) tamamlandıktan sonra access kontrolü yapılmaktadır. Bu access kontrolünde ise sınıfın üyesi olan ismin aşağıda belirtilen yetkileri  kontrol edilmektedir.
+/* Classes - 2
  
+ Class Member Function:
+ ->i: Sınıfların üye fonksiyonları sınıf scope'u içerisinde overload edilebilir. Public ve private alanda olması overloadinge engel değildir, önemli olan scope'tur. Public, private ve protected alanlar aynı scope alanı içerisindedir.
+ 
+ // Function overloading
  class Data
  {
-    public: Sınıfın public bölümü herkese açık bölümüdür. Yani sınıfın bu alanındaki isimleri herkes kullanabilir.
- 
-    private: Sadece sınıfın kendi içerisinde kullanılabilen, client kodlar tarafından kullanılamayan isimlerdir.
- 
-    protected: Kalıtım konusuyla ilgilidir, daha sonra değinilecektir.
+ private:
+     void func();
+ public:
+     void func(int);
+     void func(int,int);
  };
-
- 
- - Classlar tanımlanırken kendi içerisinde "public", "private" ve "protected" anahtar sözcükleri kullanılarak ilgili alanlara ayrılabilir.
- -- Class'ın kendi içerisindeki alan default olarak "private" alandır. Yani class içerisinde hiçbir alan anahtar sözcüğü kullanılmazsa, içerisindeki üyeler private alanlı olacaktır.
- -- Struct'ın kendi içerisindeki alan default olarak "public" alandır. Yani struct içerisinde hiçbir alan anahtar sözcüğü kullanılmazsa, içerisindeki üyeler public alanlı olacaktır.
  
  
+ ->i: Sınıfların üye fonksiyonlarının sınıf türünün sizeof'uyla bir ilgisi yoktur. Yani sınıf türünden yaratılan her nesne için fonksiyon tekrar yaratılmaz, sınıf nesnelerinin boyutunu arttırmaz.
+ 
+ 
+ ->i: Sınıf içerisindeki non-static üye fonksiyonlarının ilk parametresi yaratılan, fonksiyona ulaşan, nesnenin adresini içerir. Bu parametre gizli bir parametredir ve kullanıcının yaratacağı fonksiyonun girdilerinden bağımsızdır. Non-static olduğu için fonksiyon çağrıldığında çağıran nesnein adresini içeriye almalı ki nesne üzerinde işlemlerini gerçekleştirebilsin. Member functionlar içerisinde çağırılan data member'lara atomic göstergeler olmadan ulaşılmasının sebebi de gizli parametredir. Gizli parametre olmasına rağmen data member'lara "this" anahtar kelimesi ile de ulaşılabilmektedir.
+    Fakat static member function'lar sınıftan yaratılacak olan nesnelerden bağımsız ve tek olduğu için static ömürlü member functionlara sınıf ismi ve çözünürlük operatörüyle ulaşılabilmektedir çünkü gizli bir parametresi yoktur.
+ 
+ // Function overloading
  class Data
  {
-            // PRIVATE ALAN
-    public:
-            // PUBLIC ALAN
-    private:
-            // PRIVATE ALAN
-    public:
-            // PUBLIC ALAN
-    protected:
-            // PROTECTED ALAN
+ private:
+ public:
+             void func(int);
+     static  void staticfunc(int);
+ };
+ // Member function gizli parametre
+ {
+     Data::func(12);         // Gecersiz, non-static
+     Data::staticfunc(12);   // Gecerli,  static
  }
- 
- MEMBER
- ------
- Classın "member function" ve "Data member"ları static ve non-static olarak 2'ye ayrılmaktadır.
- 
- 1) Eğer sınıfın üyesinin bildiriminde static anahtar sözcüğü varsa bu member static ömürlüdür ve ilgili sınıf için tektir. Bu sınıftan ne kadar nesne yaratılırsa yaratılsın bütün nesneler aynı membera erişir, her nesne için yeniden yaratılmaz.
- 2) Eğer sınıfın üyesinin bildiriminde anahtar sözcüğü yoksa bu member static ömürlü değildir ve ilgili sınıftan yaratılacak olan nesneler için yeniden oluşturulur. Bütün nesneler için farklıdır.
- 
  
 */
 
@@ -48,16 +42,24 @@
 // Yapılar
 
 
+// Function overloading
 class Data
 {
-    int mx;             // Data member
-    void func(int);     // Member function
-    typedef int Word;   // Type member(member type, nested type)
+private:
+public:
+            void func(int);
+    static  void staticfunc(int);
 };
+
 
 
 //
 int main()
 {
+    // Member function gizli parametre
+    {
+        Data::func(12);         // Gecersiz, non-static
+        Data::staticfunc(12);   // Gecerli,  static
+    }
 
 }
