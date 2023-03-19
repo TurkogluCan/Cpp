@@ -1,71 +1,44 @@
-/* Inline Function - ODR
-  
- ->i:
- Normal koşullarda kod içerisinde çağırılan bir fonksiyon var ise derleyici, çağırılan fonksiyonun ismini external referance olarak .obj koda yazacak ve bağlama işlemini linker yapacak. Derleyci sadece fonksiyona giriş ve çıkış kodlarını oluşturur.
- Inline fonksiyonlarda ise derleyici bir analiz yapar ve madem ben bu fonksiyonun kodunu görüyorum, o zaman ben fonksiyonun derlenmiş halini direkt buraya gömeyim. Linker henüz devrede değil. Derleyici nerdeyse makro gibi derlenmiş fonksiyonu o satıra gömer.
+/* Constructor - Destructor
+ 
+ 
+ Constructor: Nesneyi hayata getiren fonksiyon. Construct: Kurmak
+ Destructor : Nesnenin hayatını sonlandıran fonksiyon. Destroy: Yok etmek
+ 
+ - Bütün nesnelerin hayatı constructor ile başlamak ve destructor ile sonlanmak zorundadır. C'deki handle sistemine benzemektedir.
+ - Geri dönüşleri yoktur.
+ 
+ - Fonksiyonun ismi yapının(class) ismiyle aynı olmak zorunda.
+ - const üye fonksiyon olamaz.
+ - inline olarak da tanımlanabilir.
+ 
+ - Destructure başında tilda ~ ön eki bulunur.
+ - Bir sınıfın birden fazla ctor olabilir fakat dtor'u olamaz.
+ - Destructure geri dönüş değeri ve parametresi bulunamaz.
+ - Destructure özel üye fonksiyonudur. Yani uygun şartlar sağlanırsa kullanıcı yazmazsa da derleyici bunu yazacaktır.
 
+ *->i: Nesne yaratıldığında Consructure çağırılır, nesnenin yaratıldığı scope sonlandığında ise Destructure çağırılır.
+ *->i: Global sınıf nesneleri, normal olarak main fonksiyonundan önce hayata gelir. Program sonlandığında destructure çağırılır ve ömrü sonlandırılır.
+ *->i: Bir fonksiyon içerisinde tanımlanan Static yerel nesneler sadece ilk çağırıldığında hayata gelir ve ctor'ları çağırılır. Diğer fonksiyon çağrılarında tekrar hayata gelmez. Program sonlandığında destructure çağırılır ve ömrü sonlandırılır.
  
- Derleyici inline fonksiyonu kullanabilmesi için;
-1-) Çağıran fonksiyonun tanımıyla çağırılan fonksiyonun tanımı aynı dosyada olmalı çünkü henüz linker devreye girmeden gömülme işlemi yapılır. Ben bir yerde o fonksiyona çağrı yapıyorsam derleyici o dosya içerisinde fonksiyonun tanımını da görmek zorundadır. Bunun için aynı dosya içerisinde yazılıp kullanılır fakat diğer dosyalara da taşınmak istenirse .h dosyasına fonksiyonun tanımı(içeriği) yazılmalıdır. Bu durum kodun client kullanıcılar tarafından görülmesi istenmiyorsa uygun bir durum değildir.
  
-2-) Bir fonksiyon inline diye derleyici tarafından gömülebilecek veya inline değil diye derleyici tarafından gömülemeyecek diye bir durum yoktur. Fonksiyon inline olmasına rağmen gömülmesi derleyicinin yararına değilse, performansı veya diğer şeyleri iyileştirmiyorsa gömülemeyebilir. Kod çok uzun olabilir, gömülmesi zararına olabilir.
  
+ Special Member Functions
+ ------------------------
+ C++'da sınıfın bazı fonksiyonları özel üye fonksiyonlardır. Bu özel üye fonksiyonlar, belirli koşullar sağladığında derleyici tarafından yazılabilmektedir. Bu özel üye fonksiyonlar;
 
-inline int sum_square(int x, int y)
- {
-    return x*x + y*y;
- }
- 
- ODR
- ---
- ->i: ODR(One Definition Rule), varlıkların proje içerisinde tek bir tanımının olmasıdır. Kaç tane kaynak dosya olursa olsun tanımı sadece bir tane olacaktır.
- "int factorial(...)" fonksiyonu a.c ve b.c dosyalarında tanımlanmış olsun eğer c.c dosyası a ve b'yi çağırırsa ODR ihlal edilmiş olur ve tanımsız bir durum yaratılır. Fakat inline ve constexpr fonksiyonlar buna dahil değildir.
- Eğer bir fonksiyon birkaç dosyada inline olarak tanımlanmışsa derleyici token by token, atomik seviyede uyumluluğuna bakar. Eğer fonksiyonlar token by token aynı değilse tanımsız bir davranıştır.
+     1-) Default ctor
+     2-) Destructure
+     3-) Copy ctor
+     4-) Move ctor
+     5-) Copy assignment
+     6-) Move assignment
  
  
- constexpr int sum(int x, int y)
-  {
-     return x + y;
-  }
-  
  
- inline int sum_square(int x, int y)
-  {
-     return x*x + y*y;
-  }
- 
- 
- Başlık dosyasının içerisinde normalde kod olmaz fakat bu durum c++'da inline fonksiyonlar gibi bazı özel durumlarda geçerlidir.
-    
- 
- ->i:
- Class'ların üye fonksiyonları birer inline fonksiyon olursa;
-    1-) Bildirim ve tanımlarının önüne inline eklenerek header file'da tanımlanabilir. En az birinde(bildiri veya tanım) inline ön eki olmalı.
-    2-) Doğrudan class içerisinde inline fonksiyon tanımlanabilir. Class içerisinde tanımlanan fonksiyonlar zaten impicit olarak inline fonksiyon olmaktadır, inline ön eki koyulmasa da olur.
-
- //MyClass.h
-
- class MyClass
- {
-     int x;
- public:
-     
-     int sum(int x, int y)   // Inline
-     {
-         return x+y;
-     }
-     
-     inline int divide(int x, int y);   // Inline
- };
-
- inline int MyClass::divide(int x, int y)   // Inline
- {
-     return x/y;
- }
-
-
- 
- 
+ Default COTR
+ ------------
+    Bir sınıfın parametre değişkeni olmayan ya da tüm parametreleri varsayılan argüman olan, yani parametre gönderilmeden çağırılabilen constructure'a default cotr denir.
+    Special member function olan default ctor, eğer kullanıcı tarafından class içerisine bir cotr yazılmaması durumunda derleyici tarafından default cotr yazılır. 
 */
 
 
@@ -75,34 +48,41 @@ inline int sum_square(int x, int y)
 
 
 //
-#include "deneme.h"
-#include "deneme_2.h"
-
-
-//MyClass.h
-
-class MyClass
+class Data
 {
-    int x;
 public:
-    
-    int sum(int x, int y)   // Inline
-    {
-        return x+y;
-    }
-    
-    inline int divide(int x, int y);   // Inline
+    Data();
+    ~Data();
 };
 
-inline int MyClass::divide(int x, int y)   // Inline
+
+// Constructure
+Data::Data()
 {
-    return x/y;
+    std::cout << "Data default ctor  this = " << this << "\n";
 }
+
+// Destructure
+Data::~Data()
+{
+    std::cout << "Data Desturcture  this = " << this << "\n";
+}
+
+
 
 
 //
 int main()
 {
-    std::cout << "sum = " << sum(1,2) << '\n';
+
+    std::cout << "main basladi" << "\n";
+
+    {
+        Data mydata;
+        std::cout << "&mydata = " << &mydata << "\n";
+    }
+    
+    std::cout << "main devam ediyor" << "\n";
+        
     
 }
