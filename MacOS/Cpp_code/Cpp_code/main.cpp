@@ -1,45 +1,131 @@
-/* Constructor - Destructor
+/* Class Initializer
  
  
- Constructor: Nesneyi hayata getiren fonksiyon. Construct: Kurmak
- Destructor : Nesnenin hayatını sonlandıran fonksiyon. Destroy: Yok etmek
+ COTR İçi Initialize
+ -------------------
+ Class içerisinde tanımlanan üye elemanları, COTR içerisinde initialize edilebilir, ilk değer atanabilir. Eğer üye elemanları const veya referans ise initialize etmek zorunlu olacak fakat bu şekilde initialize etmek mümkün olayacaktır. Bu veri elemanlara COTR initialize list ile ilk değer verilmelidir.
+ Tanımın örnekleri aşağıda gösterilmektedir. Static elemanlar COTR içerisinde initialize edilemez.
  
- - Bütün nesnelerin hayatı constructor ile başlamak ve destructor ile sonlanmak zorundadır. C'deki handle sistemine benzemektedir.
- - Geri dönüşleri yoktur.
- 
- - Fonksiyonun ismi yapının(class) ismiyle aynı olmak zorunda.
- - const üye fonksiyon olamaz.
- - inline olarak da tanımlanabilir.
- 
- - Destructure başında tilda ~ ön eki bulunur.
- - Bir sınıfın birden fazla ctor olabilir fakat dtor'u olamaz.
- - Destructure geri dönüş değeri ve parametresi bulunamaz.
- - Destructure özel üye fonksiyonudur. Yani uygun şartlar sağlanırsa kullanıcı yazmazsa da derleyici bunu yazacaktır.
 
- *->i: Nesne yaratıldığında Consructure çağırılır, nesnenin yaratıldığı scope sonlandığında ise Destructure çağırılır.
- *->i: Global sınıf nesneleri, normal olarak main fonksiyonundan önce hayata gelir. Program sonlandığında destructure çağırılır ve ömrü sonlandırılır.
- *->i: Bir fonksiyon içerisinde tanımlanan Static yerel nesneler sadece ilk çağırıldığında hayata gelir ve ctor'ları çağırılır. Diğer fonksiyon çağrılarında tekrar hayata gelmez. Program sonlandığında destructure çağırılır ve ömrü sonlandırılır.
- 
- 
- 
- Special Member Functions
- ------------------------
- C++'da sınıfın bazı fonksiyonları özel üye fonksiyonlardır. Bu özel üye fonksiyonlar, belirli koşullar sağladığında derleyici tarafından yazılabilmektedir. Bu özel üye fonksiyonlar;
+ //
+ class Data
+ {
+     int mx;
+     int my;
+ public:
+     Data();
+     ~Data();
+ };
 
-     1-) Default ctor
-     2-) Destructure
-     3-) Copy ctor
-     4-) Move ctor
-     5-) Copy assignment
-     6-) Move assignment
+ // 1 - Gecerli
+ Data::Data()
+ {
+    mx = 15;
+    my = 23;
+ }
+ 
+ //
+ class Data
+ {
+     const int cmx;
+           int &mr;
+ public:
+     Data(int &r);
+     ~Data();
+ };
+ 
+ 
+ // 2 - Gecersiz X
+ Data::Data(int &r)
+ {
+    cmx = 15;    // HATALI X
+    mr  = r;     // HATALI X
+ }
+ 
+
+ COTR Initializer List
+ ---------------------
+ Class içerisinde tanımlanan üye elemanları, COTR ile birlikte initialize edilebilir, ilk değer atanabilir. COTR içi ilk değer atamada hatalı olan const ve referans initializeları burada geçerlidir ve ilk değer verilmesi zorunludur. Tanımın örnekleri aşağıda gösterilmektedir. Static elemanlar bu şekilde initialize edilemez.
+ 
+ //
+ class Data
+ {
+     int mx;
+     int my;
+ public:
+     Data();
+     ~Data();
+ };
+
+
+ // Yontem-1
+ Data::Data()  :  mx(0) , my(10) { }
+ 
+ // Yontem-2
+ Data::Data()  :  mx{0} , my{10} { }
+ 
+ // Yontem-3
+ // Default olarak 0 ve null atanır
+ Data::Data()  :  mx{}  , my{}   { }
+
+ 
+ 
+ COTR içerisinde tanımlanan üye elemanlarının hayata gelme sıraları bildirimdeki sıralarıyla aynıdır. Yani önce mx daha sonra ise my hayata gelecektir. Hayata gelme durumları COTR initialize sırasında önem kazanabilir. Eğer mx ve my initializeları birbirine bağımlı yapılırsa yaratılma sıraları göz önünde bulundurulmalıdır.
+ 
+ // my, mx'e bağlı. my'ye 10 atanır.
+ Data::Data()  :  mx{10}  , my{mx}   { }
+
+ // mx, my'ye bağlı. mx'e çöp değer atanır.
+ Data::Data()  :  mx{my}  , my{10}   { }
+
+
+ 
+ //+++ CONST ve REFERANS INIT
+ class Data
+ {
+       int mx;
+       int my;
+ const int cmx;
+       int &mr;
+ 
+ public:
+     Data();
+     ~Data();
+ };
+
+ // Constructure
+ Data::Data(int &a) : mr(a), cmx(111) { }
+
+ 
+ 
+ COTR Argümanlarının Atanması
+ ----------------------------
+ Argüana sahip olan COTR fonksiyonuna, nesne bildirimi yapılırken aşağıdaki yöntemlerden birisiyle atanmalıdır.
+ 
+ 
+ //
+ class Data
+ {
+     int mx, my;
+ public:
+     Data(int);
+ };
+
+ //
+ int main()
+ {
+     // Direct initialization
+     Data mydatax(11);
+     // Copy initialization, bazı kullanım şartları bulunmaktadır
+     Data mydatay = 11;
+     // Direct list initialization
+     Data mydataz{11};
+ }
+
  
  
  
- Default COTR
- ------------
-    Bir sınıfın parametre değişkeni olmayan ya da tüm parametreleri varsayılan argüman olan, yani parametre gönderilmeden çağırılabilen constructure'a default cotr denir.
-    Special member function olan default ctor, eğer kullanıcı tarafından class içerisine bir cotr yazılmaması durumunda derleyici tarafından default cotr yazılır. 
-*/
+ */
 
 
 // Include
@@ -50,39 +136,18 @@
 //
 class Data
 {
+    int mx, my;
 public:
-    Data();
-    ~Data();
+    Data(int);
 };
-
-
-// Constructure
-Data::Data()
-{
-    std::cout << "Data default ctor  this = " << this << "\n";
-}
-
-// Destructure
-Data::~Data()
-{
-    std::cout << "Data Desturcture  this = " << this << "\n";
-}
-
-
-
 
 //
 int main()
 {
-
-    std::cout << "main basladi" << "\n";
-
-    {
-        Data mydata;
-        std::cout << "&mydata = " << &mydata << "\n";
-    }
-    
-    std::cout << "main devam ediyor" << "\n";
-        
-    
+    // Direct initialization
+    Data mydatax(11);
+    // Copy initialization, bazı kullanım şartları bulunmaktadır
+    Data mydatay = 11;
+    // Direct list initialization
+    Data mydataz{11};
 }
