@@ -1,127 +1,105 @@
-/* Class Initializer
+/* COTR Bildirim Çeşitleri
  
  
- COTR İçi Initialize
- -------------------
- Class içerisinde tanımlanan üye elemanları, COTR içerisinde initialize edilebilir, ilk değer atanabilir. Eğer üye elemanları const veya referans ise initialize etmek zorunlu olacak fakat bu şekilde initialize etmek mümkün olayacaktır. Bu veri elemanlara COTR initialize list ile ilk değer verilmelidir.
- Tanımın örnekleri aşağıda gösterilmektedir. Static elemanlar COTR içerisinde initialize edilemez.
+ Doesn't Exist
+ -------------
+ Programlayıcı ve derleyici tarafından yazılmamış, olmayan COTR durumu
  
-
+ Aşağıdaki durumda programlayıcı parametreli COTR prototipini yazmış fakat bildirmemiştir. Bu durumda derleyici parametreli bir COTR bulunduğu için default COTR de yazmayacaktır.
  //
- class Data
+ class MyClass
  {
-     int mx;
-     int my;
  public:
-     Data();
-     ~Data();
+     MyClass(int);
  };
-
- // 1 - Gecerli
- Data::Data()
- {
-    mx = 15;
-    my = 23;
- }
  
+ 
+ ->i: Programlayıcının COTR bildirmediği durumlarda derleyici tarafından otomatik olarak COTR bildirilir. Bunlar;
+ 
+    DERLEYICI TARAFINDAN
+ --------------------------------
+ Implicitly Declared Defaulted  |
+ Implicitly Declared Deleted    |
+ --------------------------------
+ 
+ Implicitly Declared Defaulted:
+ ------------------------------
+ Derleyici, sınıfın özel üye fonksiyonunu(COTR) bizim için bildirir.
+ 
+ 
+ Eğer aşağıdaki MyClass kullanıcı tarafından oluşturulmazsa derleyici tarafından aşağıdaki şekilde default olarak oluşturulur
  //
- class Data
+ class MyClass
  {
-     const int cmx;
-           int &mr;
  public:
-     Data(int &r);
-     ~Data();
- };
- 
- 
- // 2 - Gecersiz X
- Data::Data(int &r)
- {
-    cmx = 15;    // HATALI X
-    mr  = r;     // HATALI X
- }
- 
-
- COTR Initializer List
- ---------------------
- Class içerisinde tanımlanan üye elemanları, COTR ile birlikte initialize edilebilir, ilk değer atanabilir. COTR içi ilk değer atamada hatalı olan const ve referans initializeları burada geçerlidir ve ilk değer verilmesi zorunludur. Tanımın örnekleri aşağıda gösterilmektedir. Static elemanlar bu şekilde initialize edilemez.
- 
- //
- class Data
- {
-     int mx;
-     int my;
- public:
-     Data();
-     ~Data();
+     MyClass() { }
  };
 
-
- // Yontem-1
- Data::Data()  :  mx(0) , my(10) { }
- 
- // Yontem-2
- Data::Data()  :  mx{0} , my{10} { }
- 
- // Yontem-3
- // Default olarak 0 ve null atanır
- Data::Data()  :  mx{}  , my{}   { }
-
  
  
- COTR içerisinde tanımlanan üye elemanlarının hayata gelme sıraları bildirimdeki sıralarıyla aynıdır. Yani önce mx daha sonra ise my hayata gelecektir. Hayata gelme durumları COTR initialize sırasında önem kazanabilir. Eğer mx ve my initializeları birbirine bağımlı yapılırsa yaratılma sıraları göz önünde bulundurulmalıdır.
- 
- // my, mx'e bağlı. my'ye 10 atanır.
- Data::Data()  :  mx{10}  , my{mx}   { }
-
- // mx, my'ye bağlı. mx'e çöp değer atanır.
- Data::Data()  :  mx{my}  , my{10}   { }
-
-
- 
- //+++ CONST ve REFERANS INIT
- class Data
- {
-       int mx;
-       int my;
- const int cmx;
-       int &mr;
- 
- public:
-     Data();
-     ~Data();
- };
-
- // Constructure
- Data::Data(int &a) : mr(a), cmx(111) { }
-
- 
- 
- COTR Argümanlarının Atanması
+ Implicitly Declared Deleted:
  ----------------------------
- Argüana sahip olan COTR fonksiyonuna, nesne bildirimi yapılırken aşağıdaki yöntemlerden birisiyle atanmalıdır.
+ Derleyici, sınıfın özel üye fonksiyonunu(COTR) bizim için deleted olarak bildirir. Bu fonksiyona yapılan çağrı syntax hatasıdır.
+ *** Örneğin sınıfın üye elemanlarında birisi cont olsun. Eğer const üye elemana sahip bir sınıf varsa COTR list initialize sırasında ilk değer atanması lazımdır. Eğer programlayıcı COTR yazmamışsa derleyici default COTR yazar fakat const ataması yapılmadığı için syntax hatası vereceğinden bunu delete eder.
  
  
+ Eğer aşağıdaki MyClass kullanıcı tarafından oluşturulmazsa derleyici tarafından aşağıdaki şekilde default olarak oluşturulur ve yine derleyici tarafından delete edilir
  //
- class Data
+ class MyClass
  {
-     int mx, my;
+    const int cmx;
  public:
-     Data(int);
+     MyClass() = delete;
  };
 
- //
- int main()
- {
-     // Direct initialization
-     Data mydatax(11);
-     // Copy initialization, bazı kullanım şartları bulunmaktadır
-     Data mydatay = 11;
-     // Direct list initialization
-     Data mydataz{11};
- }
 
+ Programlayıcı tarafından bildirilen COTR fonksiyonları aşağıdaki yöntemlerle bildirilebilir.
+
+ PROGRAMLAYICI TARAFINDAN
+-------------------------
+User Declared            |
+User Declared Defaulted  |
+User Declared Deleted    |
+User Declared Defined    |
+-------------------------
+ 
+ User Declared
+ -------------
+ Programlayıcı tarafından bildirilen COTR'lardır.
+ //
+ class MyClass
+ {
+ public:
+     MyClass();
+ };
+ 
+ User Declared Defaultted
+ -------------------------
+ Programlayıcı tarafından bildirilen fakat derleyiciye yazdırılan COTR'lardır.
+ //
+ class MyClass
+ {
+ public:
+     MyClass() = default;
+ };
+ 
+ User Declared Deleted
+ -------------------------
+ Programlayıcı tarafından bildirilen fakat yapılan çağrıların syntax hatası olduğu COTR'lardır.
+ //
+ class MyClass
+ {
+ public:
+     MyClass() = delete;
+ };
+ 
+ 
+ 
+ -->i: Bir sınıftan türetilmiş pointer veya referans'lar için constructor çağrısında bulunulmaz çünkü nesne değillerdir, nesneyi gösterirler.
+ 
+ MyClass  mx;            // CTOR çağırılır
+ MyClass  &r{mx};        // CTOR çağırılmaz
+ MyClass  *p = &mx;      // CTOR çağırılmaz
  
  
  
@@ -134,20 +112,16 @@
 
 
 //
-class Data
+class MyClass
 {
-    int mx, my;
 public:
-    Data(int);
+    MyClass() = delete;
 };
 
 //
 int main()
 {
-    // Direct initialization
-    Data mydatax(11);
-    // Copy initialization, bazı kullanım şartları bulunmaktadır
-    Data mydatay = 11;
-    // Direct list initialization
-    Data mydataz{11};
+
+    
+    
 }
